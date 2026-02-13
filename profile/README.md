@@ -1,84 +1,69 @@
-# ❄️ FrostWeb Studios, LLC
+# FrostWeb Studios
 
-Welcome to **FrostWeb Studios**, an independent game development and Unreal Engine plugin studio.  
-We build immersive game experiences, powerful dev tools, and scalable backend systems — combining passion with performance.
+**Independent game studio and Unreal Engine plugin developer.**
 
-> 🎮 Game Developers | 🛠 Plugin Creators | 🌐 Full-Stack Infrastructure Experts
-
----
-
-## 🔹 About Us
-
-**FrostWeb Studios, LLC** is a U.S.-based indie studio focused on Unreal Engine 5 development.  
-We create modular plugins, custom content tools, and full-scale multiplayer experiences — all optimized for developers who value performance and clean architecture.
-
-Our current flagship project, **Ayndora**, is an evolving fantasy MMORPG built from the ground up with:
-
-- ✅ Unreal Engine 5 (C++ / Blueprint hybrid)
-- ✅ PostgreSQL-powered backend
-- ✅ Epic Online Services for cross-platform authentication
-- ✅ Dynamic party and quest systems
-- ✅ Player-synced world evolution (via data layers)
-
-We also contribute high-quality, drop-in **Unreal Engine plugins** designed to reduce dev time and improve multiplayer scalability.
+We build multiplayer game systems, modular UE5 plugins, and the backend infrastructure to support them — from authentication to live services.
 
 ---
 
-## 🧩 Unreal Engine Plugins
+## About
 
-Explore our public and marketplace-ready plugins:
+FrostWeb Studios, LLC is a U.S.-based indie studio specializing in Unreal Engine 5 and full-stack multiplayer architecture. We develop reusable game plugins, scalable backend services, and our flagship title **Ayndora Survival**.
+
+---
+
+## Ayndora Survival
+
+A fantasy survival MMO inspired by RuneScape, World of Warcraft, and New World. Built on Unreal Engine 5 with a modular plugin architecture and a custom backend powering identity, guilds, inventory, chat, and more.
+
+- 20-skill progression system (combat, gathering, artisan)
+- GAS-based combat with cast times, channels, projectiles, and combos
+- Data-driven character customization (race, hair, armor, weapons)
+- Multi-channel MMO chat with party and guild integration
+- Cross-platform companion app
+
+---
+
+## UE5 Plugins
+
+Standalone, production-ready plugins built for our own game and available to the community.
 
 | Plugin | Description |
 |--------|-------------|
-| **PartyManager** | A robust multiplayer party system for UE5. Supports cross-map party persistence and modular data sync. |
-| **QuestManager** | A data-driven quest system with blueprint integration, replication support, and save system compatibility. |
-| *(Coming Soon)* | TBA |
+| **FWPartySystem** | Cross-level party management via network beacons with chat integration |
+| **FWQuestSystem** | Data-driven quests with task graphs, party sharing, and compact replication |
+| **FWInventorySystem** | Inventory and equipment with seed-based RNG items, augmentation, and set bonuses |
+| **FWGuildSystem** | Guild management with ranks, permissions, and HTTP API backend |
+| **FWChatSystem** | Multi-channel MMO chat over Socket.IO with command parsing and whispers |
+| **FWFactionSystem** | Faction reputation, attitude resolution, and AI team integration |
+| **FWSkillSystem** | RuneScape-style skill progression with XP curves and GAS attribute binding |
+| **FWCustomizationSystem** | Data-driven character appearance with minimal replication footprint |
+| **FWGASSystem** | Extended Gameplay Ability System framework with modular actor base classes |
 
-> 📦 Plugins are built with **zero-code setup** in mind — perfect for Blueprint users.
-
----
-
-## 🌍 Current Projects
-
-### 🕹️ [Ayndora](https://github.com/FrostWeb-Studios/Ayndora) *(In Development)*
-
-A co-op-first fantasy MMORPG where the **party leader evolves the world**. Inspired by *RuneScape*, *WoW*, *New World*, and *LotR* — Ayndora aims to deliver slow, impactful progression, deep skill systems, and player-controlled towns.
-
-Key Features:
-- 🎯 Modular Skill XP and Leveling System
-- 🛡️ Full Player Equipment & Cosmetic Layers
-- 🗺️ Party-Based World Phasing and Quests
-- 🧠 PvP, PvE, and Gathering Roles
-- 🔐 Scalable backend powered by EOS + PostgreSQL
+All plugins are C++ with full Blueprint support, replicated, and designed for zero coupling between systems.
 
 ---
 
-## 🧠 Technologies We Use
+## Platform
 
-- **Game Engine**: Unreal Engine 5 (C++ / Blueprints)
-- **Database**: PostgreSQL (structured for MMO scalability)
-- **Backend**: Node.js + Express, Redis Caching (WIP)
-- **Authentication**: Epic Online Services (EOS)
-- **Source Control**: Perforce (Self-hosted)
-- **CI/CD & Hosting**: Docker, Home server rack & cloud migration
+Our services run on Google Cloud Platform and are built with:
 
----
-
-## 👥 Join or Follow
-
-- 🖥️ [FrostWeb Studios Website](https://frostwebstudios.com) *(Coming Soon)*
-- 🎮 [Twitch - Sinidious](https://twitch.tv/sinidious)
-- 🐦 [Twitter/X - @SinidiousDev](https://twitter.com/sinidious)
-- 📫 For plugin support, collaborations, or commissions: [contract@frostweb.studio]
+- **Unreal Engine 5** — C++ game client with 9 custom plugins
+- **Go** — Game API (guilds, inventory, factions, chat tokens)
+- **NestJS** — Identity service, CMS, admin tools
+- **Next.js** — Web frontends
+- **React Native / Expo** — Companion mobile app
+- **PostgreSQL** — Single database, schema-per-service isolation
 
 ---
 
-## 📁 Featured Repositories
+## Links
 
-- 🔹 [`QuestManagerPlugin`](https://github.com/FrostWeb-Studios/QuestManagerPlugin)
-- 🔹 [`PartyManagerPlugin`](https://github.com/FrostWeb-Studios/PartyManagerPlugin)
-- 🔹 [`Ayndora`](https://github.com/FrostWeb-Studios/Ayndora)
+- [frostweb.studio](https://frostweb.studio) — Studio website
+- [X / Twitter](https://x.com/FrostWebStudios)
+- [Discord](https://discord.gg/nPECYdzaBm)
+- contact@frostweb.studio — Plugin support, collaborations, commissions
 
 ---
 
-> © FrostWeb Studios, LLC – All rights reserved.
+&copy; FrostWeb Studios, LLC
