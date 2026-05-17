@@ -1,0 +1,58 @@
+name: Reusable Node CI
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        type: string
+        default: "22"
+      working-directory:
+        type: string
+        default: "."
+      install-cmd:
+        type: string
+        default: "npm ci"
+      typecheck-cmd:
+        type: string
+        default: "npx tsc --noEmit"
+      lint-cmd:
+        type: string
+        default: ""
+      test-cmd:
+        type: string
+        default: "npm test --if-present"
+      build-cmd:
+        type: string
+        default: ""
+
+jobs:
+  ci:
+    name: Lint, Test, Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: "npm"
+          cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+      - run: ${{ inputs.install-cmd }}
+      - name: Type check
+        if: inputs.typecheck-cmd != ''
+        run: ${{ inputs.typecheck-cmd }}
+      - name: Lint
+        if: inputs.lint-cmd != ''
+        run: ${{ inputs.lint-cmd }}
+      - name: Test
+        if: inputs.test-cmd != ''
+        run: ${{ inputs.test-cmd }}
+      - name: Build
+        if: inputs.build-cmd != ''
+        run: ${{ inputs.build-cmd }}

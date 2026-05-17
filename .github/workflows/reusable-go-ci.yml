@@ -1,0 +1,63 @@
+name: Reusable Go CI
+
+on:
+  workflow_call:
+    inputs:
+      go-version:
+        type: string
+        default: "1.24"
+      working-directory:
+        type: string
+        default: "."
+      needs-postgres:
+        type: boolean
+        default: false
+      postgres-db:
+        type: string
+        default: "test"
+      build-target:
+        type: string
+        default: "./..."
+
+jobs:
+  test:
+    name: Test & Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: ${{ inputs.needs-postgres && 'postgres:16' || '' }}
+        env:
+          POSTGRES_DB: ${{ inputs.postgres-db }}
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ inputs.go-version }}
+          cache-dependency-path: ${{ inputs.working-directory }}/go.sum
+      - run: go mod download
+      - run: go vet ./...
+      - name: Run tests
+        run: go test ./... -race -coverprofile=coverage.out
+      - run: go build -o /dev/null ${{ inputs.build-target }}
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ github.job }}
+          path: ${{ inputs.working-directory }}/coverage.out
+          if-no-files-found: ignore

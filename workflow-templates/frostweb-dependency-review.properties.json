@@ -1,0 +1,6 @@
+{
+  "name": "FrostWeb Dependency Review",
+  "description": "Block PRs that introduce vulnerable dependencies (severity >= high).",
+  "iconName": "octicon package-dependencies",
+  "categories": ["Security", "Dependency management"]
+}

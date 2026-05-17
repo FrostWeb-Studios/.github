@@ -1,0 +1,7 @@
+{
+  "name": "FrostWeb Node CI",
+  "description": "Node/TS lint + test + build + CodeQL + secret scan (calls FrostWeb-Studios/.github reusable workflows).",
+  "iconName": "nodejs",
+  "categories": ["JavaScript", "TypeScript", "Continuous integration"],
+  "filePatterns": ["package.json$"]
+}

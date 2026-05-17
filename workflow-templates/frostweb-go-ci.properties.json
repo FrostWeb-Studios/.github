@@ -1,0 +1,7 @@
+{
+  "name": "FrostWeb Go CI",
+  "description": "Go test + build + CodeQL + secret scan (calls FrostWeb-Studios/.github reusable workflows).",
+  "iconName": "go",
+  "categories": ["Go", "Continuous integration"],
+  "filePatterns": ["go.mod$"]
+}

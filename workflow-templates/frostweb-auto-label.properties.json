@@ -1,0 +1,6 @@
+{
+  "name": "FrostWeb Auto-Label PRs",
+  "description": "Apply labels from .github/labeler.yml based on changed paths.",
+  "iconName": "octicon tag",
+  "categories": ["Automation", "Triage"]
+}

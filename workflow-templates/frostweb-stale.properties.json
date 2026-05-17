@@ -1,0 +1,6 @@
+{
+  "name": "FrostWeb Stale Triage",
+  "description": "Auto-close issues stale for 60+14 days and PRs stale for 30+14 days.",
+  "iconName": "octicon clock",
+  "categories": ["Automation", "Triage"]
+}

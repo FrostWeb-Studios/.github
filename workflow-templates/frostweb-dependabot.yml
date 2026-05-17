@@ -1,0 +1,32 @@
+# NOTE: dependabot.yml is not a workflow — copy this file to
+#       .github/dependabot.yml in the target repository (NOT .github/workflows/).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels: [dependencies, ci]
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: gomod
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels: [dependencies, go]
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels: [dependencies, npm]
+    open-pull-requests-limit: 5
+    versioning-strategy: increase
+
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels: [dependencies, docker]
+    open-pull-requests-limit: 5
