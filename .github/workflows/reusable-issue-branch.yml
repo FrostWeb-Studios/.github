@@ -1,0 +1,40 @@
+name: Reusable Create Branch on Issue
+
+on:
+  workflow_call:
+    inputs:
+      max-slug-length:
+        type: number
+        default: 50
+
+jobs:
+  create-branch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create issue branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ISSUE_NUM="${{ github.event.issue.number }}"
+          TITLE="${{ github.event.issue.title }}"
+
+          SLUG=$(echo "$TITLE" \
+            | tr '[:upper:]' '[:lower:]' \
+            | sed 's/[^a-z0-9]/-/g' \
+            | sed 's/--*/-/g' \
+            | sed 's/^-//;s/-$//' \
+            | cut -c1-${{ inputs.max-slug-length }})
+
+          BRANCH="${ISSUE_NUM}-${SLUG}"
+          DEFAULT_BRANCH=$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)
+
+          echo "Creating branch: $BRANCH from $DEFAULT_BRANCH"
+          git checkout -b "$BRANCH" "origin/$DEFAULT_BRANCH"
+          git push origin "$BRANCH"

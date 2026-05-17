@@ -1,0 +1,69 @@
+name: Reusable Auto-PR on Branch Create
+
+on:
+  workflow_call:
+    inputs:
+      draft:
+        type: boolean
+        default: true
+        description: "Open the PR as draft"
+
+jobs:
+  open-pr:
+    if: github.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Extract issue number from branch name
+        id: issue
+        run: |
+          BRANCH="${GITHUB_REF_NAME}"
+          # Match patterns: "42-fix-bug", "issue-42", "feat/42-description"
+          if [[ "$BRANCH" =~ ^([0-9]+)- ]]; then
+            echo "number=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          elif [[ "$BRANCH" =~ issue-([0-9]+) ]]; then
+            echo "number=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          elif [[ "$BRANCH" =~ /([0-9]+)- ]]; then
+            echo "number=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create draft pull request
+        if: steps.issue.outputs.number
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DRAFT_FLAG: ${{ inputs.draft && '--draft' || '' }}
+        run: |
+          ISSUE_NUM="${{ steps.issue.outputs.number }}"
+          ISSUE_TITLE=$(gh issue view "$ISSUE_NUM" --json title -q .title 2>/dev/null || echo "")
+          DEFAULT_BRANCH=$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)
+
+          if [ -z "$ISSUE_TITLE" ]; then
+            echo "Issue #${ISSUE_NUM} not found, skipping PR creation"
+            exit 0
+          fi
+
+          EXISTING=$(gh pr list --head "${GITHUB_REF_NAME}" --json number -q '.[0].number' 2>/dev/null || echo "")
+          if [ -n "$EXISTING" ]; then
+            echo "PR #${EXISTING} already exists for this branch"
+            exit 0
+          fi
+
+          gh pr create \
+            --base "$DEFAULT_BRANCH" \
+            --head "${GITHUB_REF_NAME}" \
+            --title "$ISSUE_TITLE" \
+            --body "$(cat <<EOF
+          Closes #${ISSUE_NUM}
+
+          ---
+          *Auto-generated from issue branch.*
+          EOF
+          )" \
+            $DRAFT_FLAG
