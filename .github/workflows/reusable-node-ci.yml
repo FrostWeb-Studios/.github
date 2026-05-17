@@ -12,9 +12,13 @@ on:
       install-cmd:
         type: string
         default: "npm ci"
+      post-install-cmd:
+        type: string
+        default: ""
+        description: "Optional command after install (e.g., 'npx prisma generate')"
       typecheck-cmd:
         type: string
-        default: "npx tsc --noEmit"
+        default: ""
       lint-cmd:
         type: string
         default: ""
@@ -24,6 +28,13 @@ on:
       build-cmd:
         type: string
         default: ""
+      needs-gh-pkg-token:
+        type: boolean
+        default: false
+        description: "If true, exports NODE_AUTH_TOKEN=GH_PKG_TOKEN to npm install"
+    secrets:
+      GH_PKG_TOKEN:
+        required: false
 
 jobs:
   ci:
@@ -43,7 +54,13 @@ jobs:
           node-version: ${{ inputs.node-version }}
           cache: "npm"
           cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
-      - run: ${{ inputs.install-cmd }}
+      - name: Install
+        run: ${{ inputs.install-cmd }}
+        env:
+          NODE_AUTH_TOKEN: ${{ inputs.needs-gh-pkg-token && secrets.GH_PKG_TOKEN || '' }}
+      - name: Post-install
+        if: inputs.post-install-cmd != ''
+        run: ${{ inputs.post-install-cmd }}
       - name: Type check
         if: inputs.typecheck-cmd != ''
         run: ${{ inputs.typecheck-cmd }}
