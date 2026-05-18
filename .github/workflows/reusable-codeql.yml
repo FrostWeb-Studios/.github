@@ -1,29 +1,89 @@
-name: Reusable CodeQL
+name: Reusable SAST (Semgrep)
+
+# NOTE: This file is named reusable-codeql.yml for backwards compatibility with
+# existing consumers, but now runs **Semgrep** instead of CodeQL.
+# Why: CodeQL on private repos requires GitHub Advanced Security (paid add-on
+# on the Team plan). Semgrep is OSS and free for our use case.
 
 on:
   workflow_call:
     inputs:
       language:
         type: string
-        required: true
-        description: "go | javascript-typescript | python | csharp | cpp"
+        required: false
+        default: "auto"
+        description: "Kept for backwards compatibility; Semgrep auto-detects languages. Ignored."
+      config:
+        type: string
+        default: "p/default p/security-audit p/secrets"
+        description: "Space-separated Semgrep rulesets (https://semgrep.dev/explore)"
+      fail-on-detection:
+        type: boolean
+        default: true
 
 jobs:
   analyze:
+    name: analyze
     runs-on: ubuntu-latest
     permissions:
-      actions: read
       contents: read
       security-events: write
+    container:
+      image: returntocorp/semgrep:latest
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: github/codeql-action/init@v3
+
+      - name: Run Semgrep
+        id: semgrep
+        run: |
+          set -uo pipefail
+          # Build --config args
+          CFG_ARGS=""
+          for c in ${{ inputs.config }}; do
+            CFG_ARGS="$CFG_ARGS --config $c"
+          done
+          set +e
+          semgrep ci \
+            $CFG_ARGS \
+            --sarif --output semgrep.sarif \
+            --metrics off \
+            --error
+          RC=$?
+          set -e
+          echo "rc=$RC" >> "$GITHUB_OUTPUT"
+          # Don't fail the step yet; the next step decides based on input.
+          exit 0
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Semgrep SAST scan"
+            echo ""
+            if [ -s semgrep.sarif ]; then
+              FINDINGS=$(jq '[.runs[].results[]] | length' semgrep.sarif 2>/dev/null || echo "?")
+              if [ "$FINDINGS" = "0" ]; then
+                echo "✓ No findings."
+              else
+                echo "⚠️ **${FINDINGS} finding(s).** See uploaded SARIF for details."
+              fi
+            else
+              echo "(no report file produced)"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload SARIF
+        if: always() && hashFiles('semgrep.sarif') != ''
+        uses: actions/upload-artifact@v4
         with:
-          languages: ${{ inputs.language }}
-          queries: security-and-quality
-      - uses: github/codeql-action/autobuild@v3
-      - uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:${{ inputs.language }}"
+          name: semgrep-sarif
+          path: semgrep.sarif
+          if-no-files-found: ignore
+
+      - name: Fail on findings
+        if: inputs.fail-on-detection && steps.semgrep.outputs.rc != '0'
+        run: |
+          echo "::error::Semgrep exited non-zero — see SARIF artifact"
+          exit 1
