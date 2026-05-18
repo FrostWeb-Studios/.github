@@ -19,7 +19,8 @@ on:
         description: "Space-separated Semgrep rulesets (https://semgrep.dev/explore)"
       fail-on-detection:
         type: boolean
-        default: true
+        default: false
+        description: "Default false — findings show up in the job Summary + SARIF artifact, but don't block PRs. Flip to true once your codebase is clean of existing findings."
 
 jobs:
   analyze:
@@ -45,11 +46,15 @@ jobs:
             CFG_ARGS="$CFG_ARGS --config $c"
           done
           set +e
-          semgrep ci \
+          # `semgrep scan` is the offline/OSS path (vs. `semgrep ci` which
+          # requires Semgrep AppSec Platform login). Exits 1 on findings.
+          semgrep scan \
             $CFG_ARGS \
             --sarif --output semgrep.sarif \
             --metrics off \
-            --error
+            --error \
+            --quiet \
+            .
           RC=$?
           set -e
           echo "rc=$RC" >> "$GITHUB_OUTPUT"
