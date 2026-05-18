@@ -10,6 +10,12 @@ on:
         type: string
         default: ""
 
+# NOTE: actions/dependency-review-action requires GitHub Advanced Security
+# (paid Team-plan add-on) on PRIVATE repos. On PUBLIC repos it just works.
+# We continue-on-error so a "not supported on this repo" message reports
+# but doesn't fail the build. Real vulnerable-dep failures still surface
+# in the job log + PR comment.
+
 jobs:
   review:
     runs-on: ubuntu-latest
@@ -20,7 +26,19 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - id: ghas-check
+        name: Check repo visibility for GHAS requirement
+        run: |
+          set -euo pipefail
+          VIS=$(gh api "repos/${{ github.repository }}" --jq '.visibility')
+          echo "visibility=$VIS" >> "$GITHUB_OUTPUT"
+          if [ "$VIS" != "public" ]; then
+            echo "::notice::Private repo — dependency-review requires GitHub Advanced Security. Step will run continue-on-error."
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
       - uses: actions/dependency-review-action@v4
+        continue-on-error: ${{ steps.ghas-check.outputs.visibility != 'public' }}
         with:
           fail-on-severity: ${{ inputs.fail-on-severity }}
           allow-licenses: ${{ inputs.allow-licenses }}
