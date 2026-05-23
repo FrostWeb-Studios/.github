@@ -1,0 +1,39 @@
+name: Security
+
+# Security scans (SAST + secret-scan) run on a weekly cadence plus
+# workflow_dispatch for ad-hoc kicks. Deliberately NOT triggered on
+# pull_request or every push-to-default-branch — those fired ~6-12 minutes
+# of compute per PR per repo without catching meaningfully more than the
+# weekly run does. Supply-chain checks for new PRs live in the separate
+# frostweb-dependency-review.yml file.
+
+on:
+  schedule:
+    - cron: "27 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Don't cancel the weekly run if a manual dispatch happens to land on top
+# — both should complete.
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  codeql:
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: FrostWeb-Studios/.github/.github/workflows/reusable-codeql.yml@main
+    with:
+      # `language: auto` lets Semgrep (which the reusable-codeql.yml file
+      # now wraps despite the name) detect the codebase automatically.
+      language: auto
+
+  secret-scan:
+    permissions:
+      contents: read
+    uses: FrostWeb-Studios/.github/.github/workflows/reusable-gitleaks.yml@main

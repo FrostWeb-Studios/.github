@@ -1,6 +1,0 @@
-{
-  "name": "FrostWeb CodeQL",
-  "description": "Static analysis via CodeQL — runs on push, PR, and weekly schedule.",
-  "iconName": "octicon shield",
-  "categories": ["Security", "Code scanning"]
-}

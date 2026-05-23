@@ -1,0 +1,6 @@
+{
+  "name": "FrostWeb Security",
+  "description": "Weekly SAST (Semgrep) + secret scan (gitleaks). Manual via workflow_dispatch.",
+  "iconName": "octicon shield",
+  "categories": ["Security", "Code scanning"]
+}

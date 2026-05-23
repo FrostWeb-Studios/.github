@@ -3,10 +3,21 @@ name: Dependency Review
 on:
   pull_request:
     branches: [main, master]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE*'
+      - '.gitignore'
 
 permissions:
   contents: read
   pull-requests: write
+
+# Cancel an in-progress review when the PR branch is force-pushed or
+# updated; the new commit will start its own.
+concurrency:
+  group: dep-review-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   review:

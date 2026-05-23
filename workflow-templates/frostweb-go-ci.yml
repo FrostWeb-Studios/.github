@@ -2,13 +2,28 @@ name: CI
 
 on:
   push:
-    branches: [main, master, develop]
+    branches: [main, master]
   pull_request:
     branches: [main, master]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE*'
+      - '.gitignore'
+      - '.github/ISSUE_TEMPLATE/**'
+
+# Cancel in-progress PR runs when a new commit lands on the same branch,
+# but never cancel runs on the default branch itself.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != format('refs/heads/{0}', github.event.repository.default_branch) }}
 
 permissions:
   contents: read
 
+# CodeQL and gitleaks have moved out of this workflow — they're on a weekly
+# schedule via frostweb-security.yml so PRs aren't waiting on them. Add
+# frostweb-dependency-review.yml for PR-time supply-chain checks.
 jobs:
   go:
     uses: FrostWeb-Studios/.github/.github/workflows/reusable-go-ci.yml@main
@@ -16,17 +31,3 @@ jobs:
       go-version: "1.24"
       working-directory: "."
       needs-postgres: false
-
-  codeql:
-    uses: FrostWeb-Studios/.github/.github/workflows/reusable-codeql.yml@main
-    with:
-      language: go
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
-  secret-scan:
-    uses: FrostWeb-Studios/.github/.github/workflows/reusable-gitleaks.yml@main
-    permissions:
-      contents: read
