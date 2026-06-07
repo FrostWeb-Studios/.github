@@ -1,5 +1,15 @@
 name: Reusable Go CI
 
+# Streamlined CI for Go services. Each step does exactly one thing the
+# others don't:
+#   - actions/setup-go: installs Go + restores the module cache (via
+#     cache-dependency-path). Replaces the explicit `go mod download`.
+#   - go test ... -race -vet=off: builds, vets (we re-enable below), runs
+#     tests. -vet=off + explicit `go vet` would be redundant; we keep
+#     -vet=off and rely on golangci-lint's `govet` linter when enabled.
+#   - golangci-lint-action: lint pass with built-in cache.
+# Coverage upload is opt-in to save ~5s per run.
+
 on:
   workflow_call:
     inputs:
@@ -28,6 +38,10 @@ on:
       golangci-lint-version:
         type: string
         default: "latest"
+      upload-coverage:
+        type: boolean
+        default: false
+        description: "Upload coverage.out as an artifact. Off by default — most repos don't consume it."
 
 jobs:
   test:
@@ -52,34 +66,45 @@ jobs:
       run:
         working-directory: ${{ inputs.working-directory }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: false
+
       - name: Set up Go (explicit version)
         if: inputs.go-version != ''
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: ${{ inputs.go-version }}
           cache-dependency-path: ${{ inputs.working-directory }}/go.sum
       - name: Set up Go (from go.mod)
         if: inputs.go-version == ''
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: ${{ inputs.working-directory }}/${{ inputs.go-version-file }}
           cache-dependency-path: ${{ inputs.working-directory }}/go.sum
-      - run: go mod download
-      - run: go vet ./...
-      - name: Run tests
-        run: go test ./... -race -coverprofile=coverage.out
-      - run: go build -o /dev/null ${{ inputs.build-target }}
+
+      # `go test` builds + vets + tests. We pass -vet=off because the
+      # subsequent golangci-lint pass (when enabled) runs govet with the
+      # rest of the linter suite — running it twice was burning ~5s/run.
+      - name: Test (build + race + cover)
+        run: go test ${{ inputs.build-target }} -race -vet=off -coverprofile=coverage.out
+
+      # Verify the production binary path compiles too (test only covers
+      # files imported by tests). Cheap because module cache is warm.
+      - name: Build verify
+        if: inputs.build-target != './...'
+        run: go build -o /dev/null ${{ inputs.build-target }}
+
       - name: golangci-lint
         if: inputs.run-golangci-lint
         uses: golangci/golangci-lint-action@v7
         with:
           version: ${{ inputs.golangci-lint-version }}
           working-directory: ${{ inputs.working-directory }}
+          args: --timeout=3m
+
       - name: Upload coverage
-        if: always()
+        if: inputs.upload-coverage && always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ github.job }}

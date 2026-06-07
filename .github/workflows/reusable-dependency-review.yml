@@ -1,5 +1,13 @@
 name: Reusable Dependency Review
 
+# Skip the checkout entirely — dependency-review-action reads the PR
+# diff via the GitHub API, not the working tree. That alone saves
+# ~5-10s per run.
+#
+# The GHAS-required gate for private repos is enforced by
+# `continue-on-error` keyed off the PR base repo visibility, which we
+# read straight from the event payload (no extra gh api call).
+
 on:
   workflow_call:
     inputs:
@@ -10,12 +18,6 @@ on:
         type: string
         default: ""
 
-# NOTE: actions/dependency-review-action requires GitHub Advanced Security
-# (paid Team-plan add-on) on PRIVATE repos. On PUBLIC repos it just works.
-# We continue-on-error so a "not supported on this repo" message reports
-# but doesn't fail the build. Real vulnerable-dep failures still surface
-# in the job log + PR comment.
-
 jobs:
   review:
     runs-on: ubuntu-latest
@@ -23,22 +25,8 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - id: ghas-check
-        name: Check repo visibility for GHAS requirement
-        run: |
-          set -euo pipefail
-          VIS=$(gh api "repos/${{ github.repository }}" --jq '.visibility')
-          echo "visibility=$VIS" >> "$GITHUB_OUTPUT"
-          if [ "$VIS" != "public" ]; then
-            echo "::notice::Private repo — dependency-review requires GitHub Advanced Security. Step will run continue-on-error."
-          fi
-        env:
-          GH_TOKEN: ${{ github.token }}
       - uses: actions/dependency-review-action@v4
-        continue-on-error: ${{ steps.ghas-check.outputs.visibility != 'public' }}
+        continue-on-error: ${{ github.event.pull_request.base.repo.visibility != 'public' }}
         with:
           fail-on-severity: ${{ inputs.fail-on-severity }}
           allow-licenses: ${{ inputs.allow-licenses }}
