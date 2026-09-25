@@ -1,0 +1,45 @@
+name: Dependabot auto-merge
+
+# Merge Dependabot minor/patch PRs automatically (org decision 2026-08-06;
+# majors excluded since 2026-09-25, see below).
+#
+# History: the original version commented "@dependabot squash and merge",
+# but Dependabot silently ignores command comments in this org — even from
+# humans (no reaction, no reply; 2026-08-22 audit). Every PR that appeared
+# to auto-merge had actually been merged by hand. So merge directly with
+# LIVE_PROMOTE_PAT (org admin — bypasses the code-owner ruleset).
+#
+# pull_request_target runs in base-branch context: PR code is never checked
+# out here, and org secrets are available even on Dependabot-actor events
+# (plain pull_request would only get Dependabot-scoped secrets).
+#
+# NOTE: LIVE_PROMOTE_PAT is an org secret with "private repositories"
+# visibility. In a PUBLIC repo GH_TOKEN is empty and the merge step fails
+# (exit 4) — merge Dependabot PRs by hand there, or widen the secret's
+# visibility deliberately.
+
+on: pull_request_target
+
+permissions: {}
+
+# 2026-09-25: majors are NOT auto-merged any more. Auto-merged major bumps
+# have broken production three times org-wide (typescript 5->6 and
+# @nestjs/platform-express 11->12 in identity-service; typescript 6->7 in
+# ChatServer made master unbuildable). Major PRs stay open for a human.
+
+jobs:
+  auto-merge:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Merge (minor/patch only)
+        if: steps.meta.outputs.update-type != 'version-update:semver-major'
+        run: gh pr merge "$PR_URL" --squash --admin
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.LIVE_PROMOTE_PAT }}

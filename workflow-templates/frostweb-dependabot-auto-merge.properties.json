@@ -1,0 +1,6 @@
+{
+  "name": "FrostWeb Dependabot Auto-merge",
+  "description": "Squash-merge Dependabot minor/patch PRs with LIVE_PROMOTE_PAT; semver-major bumps stay open for human review.",
+  "iconName": "octicon dependabot",
+  "categories": ["Automation", "Dependencies"]
+}
