@@ -23,6 +23,10 @@ updates:
     labels: [dependencies, npm]
     open-pull-requests-limit: 5
     versioning-strategy: increase
+    ignore:
+      # TypeScript 7 (the Go compiler): typescript-eslint pins typescript <6.1 and tsup breaks; drop this once they support it
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: docker
     directory: "/"
