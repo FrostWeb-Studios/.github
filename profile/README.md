@@ -8,7 +8,7 @@ We build multiplayer game systems, modular UE5 plugins, and the backend infrastr
 
 ## About
 
-FrostWeb Studios, LLC is a U.S.-based indie studio specializing in Unreal Engine 5 and full-stack multiplayer architecture. We develop reusable game plugins, scalable backend services, and a slate of titles across the MMO, MOBA, survival, and space-sim genres.
+FrostWeb Studios, LLC is a U.S.-based indie studio specializing in Unreal Engine 5 and full-stack multiplayer architecture. We develop reusable game plugins, scalable backend services, and a slate of titles across the MMO and survival genres.
 
 ---
 
