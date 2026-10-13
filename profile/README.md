@@ -17,17 +17,8 @@ FrostWeb Studios, LLC is a U.S.-based indie studio specializing in Unreal Engine
 ### Ayndora Survival *(flagship — alpha)*
 A stylized co-op MMORPG inspired by RuneScape, World of Warcraft, and New World. 15 RuneScape-style skills, classless GAS combat, guild-controlled cities, party-based exploration, and a full-loot PvP zone.
 
-### Ayndora MOBA
-A classless 5v5 MOBA set in the same world as Ayndora Survival. Build-defining gear and abilities replace fixed champions; matches resolve through skill loadouts and lane macro, not picks/bans.
-
 ### MuricaAF
 A modern-military survival FPS with community-hosted persistent shards. Single MetaHuman body, hybrid GAS movement, and a server-admin toolkit for community operators.
-
-### TerraVox
-A voxel survival crafter using marching cubes, dimension servers, a Steam Workshop mod SDK, and GAS-driven progression.
-
-### Cradlefall
-An EVE-feel single-shard space sim — three factions descended from three Arks, jump-gate-connected systems, real-time skill training, and player-driven industry.
 
 ---
 
@@ -61,13 +52,12 @@ Standalone, production-ready plugins built for our own games and available to th
 Our services run on Google Cloud Platform and ship through a custom CI/CD stack:
 
 - **Unreal Engine 5** — C++ clients with 16 first-party plugins
-- **Go** — Game APIs (Ayndora, MOBA, Murica, Market, Watchfire)
+- **Go** — Game APIs (Ayndora, Murica, Market)
 - **NestJS** — Identity, CMS, admin, store
 - **Next.js** — Web frontends
 - **React Native / Expo** — Mobile companion app
-- **Electron** — Desktop launcher
 - **PostgreSQL** — Single database, schema-per-service isolation
-- **GKE + Agones** — Dedicated game-server fleets
+- **Docker / Agones** — Dedicated game-server fleets
 - **Horde** — In-house Unreal build / CI / artifact pipeline
 - **Perforce** — Engine, content, and plugin source control
 
