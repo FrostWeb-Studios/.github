@@ -19,18 +19,19 @@ jobs:
           fetch-depth: 0
 
       - name: Create issue branch
+        # Event data goes through env, never ${{ }} inside the script: an issue title is attacker-controlled text.
         env:
           GH_TOKEN: ${{ github.token }}
+          ISSUE_NUM: ${{ github.event.issue.number }}
+          TITLE: ${{ github.event.issue.title }}
+          MAX_SLUG: ${{ inputs.max-slug-length }}
         run: |
-          ISSUE_NUM="${{ github.event.issue.number }}"
-          TITLE="${{ github.event.issue.title }}"
-
-          SLUG=$(echo "$TITLE" \
+          SLUG=$(printf '%s\n' "$TITLE" \
             | tr '[:upper:]' '[:lower:]' \
             | sed 's/[^a-z0-9]/-/g' \
             | sed 's/--*/-/g' \
             | sed 's/^-//;s/-$//' \
-            | cut -c1-${{ inputs.max-slug-length }})
+            | cut -c1-"$MAX_SLUG")
 
           BRANCH="${ISSUE_NUM}-${SLUG}"
           DEFAULT_BRANCH=$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)
