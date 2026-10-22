@@ -25,7 +25,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/dependency-review-action@v4
+      - uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4
         continue-on-error: ${{ github.event.pull_request.base.repo.visibility != 'public' }}
         with:
           fail-on-severity: ${{ inputs.fail-on-severity }}
