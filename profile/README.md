@@ -2,64 +2,67 @@
 
 **Independent game studio and Unreal Engine plugin developer.**
 
-We build multiplayer game systems, modular UE5 plugins, and the backend infrastructure to support them — from authentication to live services.
+We build multiplayer games, modular UE5 plugins, and the online services behind them — from accounts and authentication to stores, chat and dedicated servers.
 
 ---
 
 ## About
 
-FrostWeb Studios, LLC is a U.S.-based indie studio specializing in Unreal Engine 5 and full-stack multiplayer architecture. We develop reusable game plugins, scalable backend services, and a slate of titles across the MMO and survival genres.
+FrostWeb Studios, LLC is a U.S.-based indie studio working in Unreal Engine 5 and full-stack multiplayer architecture. We develop our own games, a set of reusable game plugins, and the FrostWeb account platform that ties them together.
 
 ---
 
 ## Games
 
-### Ayndora Survival *(flagship — alpha)*
-A stylized co-op MMORPG inspired by RuneScape, World of Warcraft, and New World. 15 RuneScape-style skills, classless GAS combat, guild-controlled cities, party-based exploration, and a full-loot PvP zone.
+### AyndoraMMO
+A high-fantasy MMORPG built on skills rather than classes. Players train combat, gathering, crafting and utility skill lines, fight with GAS-driven abilities, join parties and guilds, trade on a player-driven market, and take on dungeons, raids and an open full-loot PvP zone.
 
 ### MuricaAF
-A modern-military survival FPS with community-hosted persistent shards. Single MetaHuman body, hybrid GAS movement, and a server-admin toolkit for community operators.
+Third-person persistent-world zombie survival in a post-apocalyptic USA, on community-hosted shards. A seasonal Drift of infection moves across the map, condemning settled districts and reopening others, so the world never stands still.
 
 ---
 
 ## UE5 Plugins
 
-Standalone, production-ready plugins built for our own games and available to the community. All C++ with full Blueprint support, replicated, and designed for zero coupling between systems.
+Plugins built for our own games. All C++ with Blueprint support, replicated, and designed as an optional set: no plugin forces another one on.
 
 | Plugin | Description |
 |---|---|
-| **FWGASSystem** | Extended Gameplay Ability System framework with modular actor base classes |
-| **FWOnlineAuth** | OAuth/JWT identity client (login, register, MFA, refresh) |
-| **FWPartySystem** | Cross-level party management via network beacons with chat integration |
-| **FWGuildSystem** | Guild management with ranks, permissions, and HTTP API backend |
-| **FWChatSystem** | Multi-channel MMO chat over Socket.IO with command parsing and whispers |
-| **FWQuestSystem** | Data-driven quests with task graphs, party sharing, and compact replication |
-| **FWInventorySystem** | Inventory and equipment with seed-based RNG items, augmentation, and set bonuses |
-| **FWMarketSystem** | Hybrid Grand-Exchange-style auction house with VWAP pricing and anti-manipulation |
-| **FWSkillSystem** | RuneScape-style skill progression with XP curves and GAS attribute binding |
-| **FWCustomizationSystem** | Data-driven character appearance with minimal replication footprint |
-| **FWFactionSystem** | Faction reputation, attitude resolution, and AI team integration |
+| **FWGASSystem** | Gameplay Ability System framework with modular actor base classes |
+| **FWOnlineAuth** | FrostWeb account client: login, register, MFA, token refresh and auth UI |
+| **FWPartySystem** | Beacon-based parties that persist across level transfers, with chat integration |
+| **FWGuildSystem** | Guilds with ranks, permissions, invitations and an HTTP API backend |
+| **FWChatSystem** | Multi-channel chat over Socket.IO with party support |
+| **FWQuestSystem** | Data-driven quests with instanced tasks, party sharing and daily/weekly resets |
+| **FWInventorySystem** | Inventory and equipment with random affixes, augmentation and database serialization |
+| **FWMarketSystem** | Player auction house with listings, buy orders, guide prices and price history |
+| **FWSkillSystem** | Skill progression with XP curves, levelling and skill-gated content |
+| **FWCustomizationSystem** | Data-driven character appearance with unlock tracking |
+| **FWFactionSystem** | Faction reputation with AI integration and replication |
 | **FWDialogueSystem** | Branching dialogue trees with conditions and actions |
-| **FWAISystem** | Threat tables, leashing, patrol, BT nodes, and spawn tables |
-| **FWAchievementSystem** | Tiered achievements with platform and backend sync |
-| **FWAgonesIntegration** | Agones SDK bridge for game-server fleet lifecycle on Kubernetes |
-| **FWSQLite** | Embedded SQLite driver for offline/local-cache scenarios |
+| **FWAISystem** | NPC behaviour: threat tables, leashing, patrol and spawning |
+| **FWAchievementSystem** | Tiered achievements with progress tracking and backend sync |
+| **FWAgonesIntegration** | Agones SDK bridge for dedicated-server lifecycle |
+| **FWSQLite** | SQLite wrapper with a simple Execute/Query API |
+
+Plugin documentation: [FrostWeb-Studios/docs](https://github.com/FrostWeb-Studios/docs)
 
 ---
 
 ## Platform
 
-Our services run on Google Cloud Platform and ship through a custom CI/CD stack:
-
-- **Unreal Engine 5** — C++ clients with 16 first-party plugins
-- **Go** — Game APIs (Ayndora, Murica, Market)
-- **NestJS** — Identity, CMS, admin, store
-- **Next.js** — Web frontends
-- **React Native / Expo** — Mobile companion app
-- **PostgreSQL** — Single database, schema-per-service isolation
-- **Docker / Agones** — Dedicated game-server fleets
-- **Horde** — In-house Unreal build / CI / artifact pipeline
-- **Perforce** — Engine, content, and plugin source control
+- **Unreal Engine 5** — C++ games and the 16 FW plugins above
+- **Go** — Game APIs (Ayndora, MuricaAF, market)
+- **NestJS** — Identity, CMS, store and support services
+- **Next.js** — Studio site, store, support centre and player portals
+- **Electron + React** — FrostLauncher, the desktop launcher
+- **Kotlin Multiplatform + Compose** — The native FrostWeb mobile app (Android first): authenticator, friends and news
+- **Discourse** — Community forums with FrostWeb chat built in
+- **PostgreSQL** — Schema-per-service isolation on Google Cloud
+- **Google Cloud Run + Cloudflare** — Service hosting and edge
+- **Docker / Agones** — Dedicated game servers
+- **Horde** — Unreal build and CI pipeline
+- **Perforce** — Engine, content and plugin source control
 
 ---
 
@@ -68,13 +71,13 @@ Our services run on Google Cloud Platform and ship through a custom CI/CD stack:
 - [frostweb.studio](https://frostweb.studio) — Studio website
 - [X / Twitter](https://x.com/FrostWebStudios)
 - [Discord](https://discord.gg/nPECYdzaBm)
-- contact@frostweb.studio — Plugin support, collaborations, commissions
+- contact@frostweb.studio — Plugin support and collaborations
 
 ---
 
 ## Security
 
-Please report security vulnerabilities responsibly. See [SECURITY.md](https://github.com/FrostWeb-Studios/.github/blob/main/SECURITY.md) for our disclosure policy.
+Please report security vulnerabilities responsibly. See [SECURITY.md](https://github.com/FrostWeb-Studios/.github/blob/master/SECURITY.md) for our disclosure policy.
 
 ---
 
