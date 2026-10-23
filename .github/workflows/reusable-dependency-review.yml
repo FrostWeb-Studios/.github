@@ -4,9 +4,10 @@ name: Reusable Dependency Review
 # diff via the GitHub API, not the working tree. That alone saves
 # ~5-10s per run.
 #
-# The GHAS-required gate for private repos is enforced by
-# `continue-on-error` keyed off the PR base repo visibility, which we
-# read straight from the event payload (no extra gh api call).
+# Private repos skip the job: dependency review needs GitHub Advanced
+# Security there, which the org doesn't have, so it could never fail a PR
+# and only cost a runner. A skipped job starts no runner and counts as
+# passed for required checks. Visibility comes from the event payload.
 
 on:
   workflow_call:
@@ -20,13 +21,13 @@ on:
 
 jobs:
   review:
+    if: github.event.pull_request.base.repo.visibility == 'public'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
     steps:
       - uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4
-        continue-on-error: ${{ github.event.pull_request.base.repo.visibility != 'public' }}
         with:
           fail-on-severity: ${{ inputs.fail-on-severity }}
           allow-licenses: ${{ inputs.allow-licenses }}
