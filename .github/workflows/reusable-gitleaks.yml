@@ -36,8 +36,10 @@ jobs:
           set -euo pipefail
           VERSION="${{ inputs.gitleaks-version }}"
           curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz" \
-            | tar -xz -C /tmp
-          sudo mv /tmp/gitleaks /usr/local/bin/gitleaks
+            | tar -xz -C "$RUNNER_TEMP" gitleaks
+          # No sudo: self-hosted runners have none. The job temp dir is per job and wiped after it.
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+          export PATH="$RUNNER_TEMP:$PATH"
           gitleaks version
 
       - name: Run gitleaks detect
