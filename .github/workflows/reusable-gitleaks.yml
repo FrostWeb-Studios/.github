@@ -22,7 +22,7 @@ on:
 
 jobs:
   scan:
-    runs-on: ${{ fromJSON(vars.CI_RUNNER || '"ubuntu-latest"') }}
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || (github.event.repository.private && '["self-hosted","frostweb"]' || '"ubuntu-latest"')) }}
     permissions:
       contents: read
     steps:

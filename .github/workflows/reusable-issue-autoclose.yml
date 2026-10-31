@@ -10,7 +10,7 @@ on:
 
 jobs:
   auto-merge:
-    runs-on: ${{ fromJSON(vars.CI_RUNNER || '"ubuntu-latest"') }}
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || (github.event.repository.private && '["self-hosted","frostweb"]' || '"ubuntu-latest"')) }}
     permissions:
       contents: write
       pull-requests: write

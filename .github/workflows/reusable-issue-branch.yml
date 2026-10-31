@@ -9,7 +9,7 @@ on:
 
 jobs:
   create-branch:
-    runs-on: ${{ fromJSON(vars.CI_RUNNER || '"ubuntu-latest"') }}
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || (github.event.repository.private && '["self-hosted","frostweb"]' || '"ubuntu-latest"')) }}
     permissions:
       contents: write
       issues: read
