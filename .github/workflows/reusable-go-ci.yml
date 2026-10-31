@@ -46,7 +46,7 @@ on:
 jobs:
   test:
     name: Test & Build
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '"ubuntu-latest"') }}
     permissions:
       contents: read
     services:
@@ -56,7 +56,7 @@ jobs:
           POSTGRES_DB: ${{ inputs.postgres-db }}
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
-        ports: ["5432:5432"]
+        ports: ["5432"]  # random host port: several runners share one host
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -87,6 +87,9 @@ jobs:
       # subsequent golangci-lint pass (when enabled) runs govet with the
       # rest of the linter suite — running it twice was burning ~5s/run.
       - name: Test (build + race + cover)
+        env:
+          PGHOST: localhost
+          PGPORT: ${{ job.services.postgres.ports['5432'] }}
         run: go test ${{ inputs.build-target }} -race -vet=off -coverprofile=coverage.out
 
       # Verify the production binary path compiles too (test only covers
