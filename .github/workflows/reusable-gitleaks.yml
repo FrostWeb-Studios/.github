@@ -11,8 +11,8 @@ on:
         default: "8.21.2"
       fail-on-detection:
         type: boolean
-        default: false
-        description: "Default false — findings show in Summary + SARIF artifact but don't block PRs. Flip to true after triaging existing findings."
+        default: true
+        description: "Default true since 2026-11-12: a detection fails the job. Triage a false positive with a .gitleaksignore fingerprint in the calling repo; pass false only while triaging."
 
 # Why this calls the gitleaks BINARY directly instead of gitleaks/gitleaks-action@v2:
 # As of late 2024, gitleaks-action requires a paid GITLEAKS_LICENSE secret when run
